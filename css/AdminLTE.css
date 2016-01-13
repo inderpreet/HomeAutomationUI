@@ -162,6 +162,12 @@ img {
   width: auto;
 }
 /* Background colors */
+.bg-pink {
+  background-color: #F74AAC;
+}
+.bg-lightpink {
+  background-color: #F584C4
+}
 .bg-red,
 .bg-yellow,
 .bg-aqua,
