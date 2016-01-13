@@ -257,7 +257,7 @@
                             <!-- small box -->
                             <div class="small-box bg-pink">
                                 <div class="inner">
-                                    <img src="img/baby.gif" style="width:200px;height:140px">
+                                    <img src="img/baby.gif" style="width:180px;height:110px">
 
                                 </div>
                                 <!-- <a href="#" class="small-box-footer">
@@ -305,6 +305,12 @@
                                             <button class="btn btn-primary" onclick="lampOff()"><i class="fa fa-times-circle"></i> Off</button>
                                         </div>
                                     </div><!-- /.row - inside box -->
+
+                                    <div class="row">
+                                        <div class="col-lg-12">
+                                            <p id="lampIntensity">Current Intensity(0-255) =  0</p>
+                                        </div>
+                                    </div>
 
                                     <div class="row">
                                         <div class="tab-content col-lg-6">
@@ -381,8 +387,15 @@
             client.onMessageArrived = onMessageArrived;
 
             function onMessageArrived(message) {
-                iotLampIntensity=Number(message.payloadString);
-                document.getElementById("lampIntensity").innerHTML = toString(iotLampIntensity)
+                if( !isNaN(message.payloadString)){
+                    iotLampIntensity=Number(message.payloadString);
+                    if(iotLampIntensity>255){
+                        iotLampIntensity=255;
+                    } else if(iotLampIntensity<0){
+                        iotLampIntensity=0;
+                    }
+                    document.getElementById("lampIntensity").innerHTML = "Current Intensity(0-255) = " + iotLampIntensity.toString();
+                } 
             }
 
             function onConnect() {
@@ -390,7 +403,8 @@
                 var message = new Paho.MQTT.Message(':?');
                 message.destinationName = "ipv1/babylight/query";
                 client.send(message);
-                document.getElementById("lampMess").innerHTML = "MQTT Connected"
+                document.getElementById("lampMess").innerHTML = "MQTT Connected";
+                client.subscribe("ipv1/babylight/query");
             };
 
             client.connect({
@@ -402,7 +416,8 @@
                     var message = new Paho.MQTT.Message(':1'+toPaddedString(iotLampIntensity));
                     message.destinationName = "ipv1/babylight/command";
                     client.send(message);
-                    document.getElementById("lampMess").innerHTML = "Intensity sent " + toPaddedString(iotLampIntensity)
+                    document.getElementById("lampMess").innerHTML = "Intensity sent " + toPaddedString(iotLampIntensity);
+                    document.getElementById("lampIntensity").innerHTML = "Current Intensity = " + iotLampIntensity.toString();
                 }
             }
 
